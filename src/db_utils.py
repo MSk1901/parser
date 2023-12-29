@@ -67,6 +67,7 @@ class PostgresExecutor(DBExecutor):
                                     area varchar(100) NOT NULL,
                                     salary_from int NOT NULL,
                                     salary_to int NOT NULL,
+                                    salary_currency varchar(5) NOT NULL,
                                     schedule varchar(50) NOT NULL,
                                     employment_type varchar(50) NOT NULL,
                                     requirements text
@@ -105,6 +106,7 @@ class PostgresExecutor(DBExecutor):
                             '{value["area"]}',
                             {value["salary_from"]},
                             {value["salary_to"]},
+                            '{value["salary_currency"]}',
                             '{value["schedule"]}',
                             '{value["employment_type"]}',
                             '{value["requirements"]}'
@@ -176,9 +178,10 @@ class DBManager(DataHandler):
                                         "area": vacancy[5],
                                         "salary_from": vacancy[6],
                                         "salary_to": vacancy[7],
-                                        "schedule": vacancy[8],
-                                        "employment_type": vacancy[9],
-                                        "requirements": vacancy[10]}
+                                        "salary_currency": vacancy[8],
+                                        "schedule": vacancy[9],
+                                        "employment_type": vacancy[10],
+                                        "requirements": vacancy[11]}
                         vacancies_parsed.append(vacancy_dict)
 
             return vacancies_parsed
