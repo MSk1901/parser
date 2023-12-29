@@ -26,7 +26,7 @@ class PostgresExecutor(DBExecutor):
             conn.autocommit = True
             cursor = conn.cursor()
 
-            cursor.execute(f"SELECT 1 FROM pg_catalog.pg_database WHERE datname = {db_name}")
+            cursor.execute(f"SELECT 1 FROM pg_catalog.pg_database WHERE datname = '{db_name}'")
             exists = cursor.fetchone()
             if not exists:
                 cursor.execute(f"CREATE DATABASE {db_name}")
