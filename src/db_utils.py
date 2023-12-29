@@ -152,7 +152,40 @@ class DBManager(DataHandler):
             raise Exception(e)
 
     def get_all_vacancies(self):
-        pass
+        """Returns list of all vacancies"""
+        vacancies_parsed = []
+
+        try:
+            with psycopg2.connect(
+                    host="localhost",
+                    database="course",
+                    user="postgres",
+                    password=self.password) as connector:
+                with connector.cursor() as cursor:
+
+                    cursor.execute("SELECT * FROM vacancies")
+                    vacancies = cursor.fetchall()
+
+                    for vacancy in vacancies:
+
+                        vacancy_dict = {"id": vacancy[0],
+                                        "name": vacancy[1],
+                                        "type": vacancy[2],
+                                        "vacancy_url": vacancy[3],
+                                        "employer_id": vacancy[4],
+                                        "area": vacancy[5],
+                                        "salary_from": vacancy[6],
+                                        "salary_to": vacancy[7],
+                                        "schedule": vacancy[8],
+                                        "employment_type": vacancy[9],
+                                        "requirements": vacancy[10]}
+                        vacancies_parsed.append(vacancy_dict)
+
+            return vacancies_parsed
+
+        except (psycopg2.OperationalError, psycopg2.DatabaseError,
+                psycopg2.InternalError, psycopg2.DataError) as e:
+            raise Exception(e)
 
     def get_avg_salary(self):
         pass
