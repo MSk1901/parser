@@ -138,7 +138,6 @@ class DBManager(DataHandler):
                     user="postgres",
                     password=self.password) as connector:
                 with connector.cursor() as cursor:
-
                     cursor.execute("SELECT COUNT(*) FROM employers")
                     companies_count = cursor.fetchone()[0]
 
@@ -164,12 +163,10 @@ class DBManager(DataHandler):
                     user="postgres",
                     password=self.password) as connector:
                 with connector.cursor() as cursor:
-
                     cursor.execute("SELECT * FROM vacancies")
                     vacancies = cursor.fetchall()
 
                     for vacancy in vacancies:
-
                         vacancy_dict = {"id": vacancy[0],
                                         "name": vacancy[1],
                                         "type": vacancy[2],
@@ -263,4 +260,42 @@ class DBManager(DataHandler):
             raise Exception(e)
 
     def get_vacancies_with_keyword(self, keyword: str):
-        pass
+        """Returns vacancies with a keyword in name or requirements"""
+        vacancies_list = []
+
+        try:
+            with psycopg2.connect(
+                    host="localhost",
+                    database="course",
+                    user="postgres",
+                    password=self.password) as connector:
+                with connector.cursor() as cursor:
+                    cursor.execute(f"""
+                            SELECT * FROM vacancies
+                            WHERE name ILIKE '%{keyword}%' 
+                            OR requirements ILIKE '%{keyword}%';
+                            """)
+                    result = cursor.fetchall()
+
+                    for value in result:
+                        vacancy = {"vacancy_id": value[0],
+                                   "name": value[1],
+                                   "type": value[2],
+                                   "url": value[3],
+                                   "employer_id": value[4],
+                                   "area": value[5],
+                                   "salary_from": value[6],
+                                   "salary_to": value[7],
+                                   "salary_currency": value[8],
+                                   "schedule": value[9],
+                                   "employment_type": value[10],
+                                   "requirements": value[11]
+                                   }
+
+                        vacancies_list.append(vacancy)
+
+            return vacancies_list
+
+        except (psycopg2.OperationalError, psycopg2.DatabaseError,
+                psycopg2.InternalError, psycopg2.DataError) as e:
+            raise Exception(e)
