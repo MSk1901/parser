@@ -5,14 +5,15 @@ from src.abs_classes import JobsParser
 
 class HeadHunterAPI(JobsParser):
 
+    employers_id = ["15478", "9498120", "80", "4181", "1102601",
+                    "3529", "78638", "1740", "3127", "2180"]
+
     def get_vacancies(self):
         """Осуществляет поиск вакансий по ключевому слову и сохраняет вакансии в список"""
-        employers_id = ["15478", "9498120", "80", "4181", "1102601",
-                        "3529", "78638", "1740", "3127", "2180"]
         vacancies_list = []
 
         try:
-            for employer in employers_id:
+            for employer in self.employers_id:
                 params = {"employer_id": employer, "only_with_salary": "true", "page": 0, "per_page": 100}
                 response = requests.get("https://api.hh.ru/vacancies", params=params)
                 data = response.json()["items"]
@@ -31,8 +32,6 @@ class HeadHunterAPI(JobsParser):
                                     "vacancy_url": vacancy["alternate_url"],
                                     "type": vacancy["type"]["name"],
                                     "employer_id": employer,
-                                    "employer_name": vacancy["employer"]["name"],
-                                    "employer_url": vacancy["employer"]["alternate_url"],
                                     "area": vacancy["area"]["name"],
                                     "salary_from": salary_from,
                                     "salary_to": salary_to,
