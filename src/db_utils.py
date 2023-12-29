@@ -1,6 +1,6 @@
 import psycopg2
 
-from .abs_classes import DataHandler, DBExecutor
+from src.abs_classes import DataHandler, DBExecutor
 
 
 class PostgresExecutor(DBExecutor):
@@ -120,8 +120,36 @@ class PostgresExecutor(DBExecutor):
 
 class DBManager(DataHandler):
 
+    def __init__(self, password):
+        self.__password = password
+
+    @property
+    def password(self):
+        return self.__password
+
     def get_companies_and_vacancies_count(self):
-        pass
+        """Returns amount of unique companies and vacancies"""
+        try:
+            with psycopg2.connect(
+                    host="localhost",
+                    database="course",
+                    user="postgres",
+                    password=self.password) as connector:
+                with connector.cursor() as cursor:
+
+                    cursor.execute("SELECT COUNT(*) FROM employers")
+                    companies_count = cursor.fetchone()[0]
+
+                    cursor.execute("SELECT COUNT(*) FROM vacancies")
+                    vacancies_count = cursor.fetchone()[0]
+
+                    data = {"companies_count": companies_count,
+                            "vacancies_count": vacancies_count}
+                    return data
+
+        except (psycopg2.OperationalError, psycopg2.DatabaseError,
+                psycopg2.InternalError, psycopg2.DataError) as e:
+            raise Exception(e)
 
     def get_all_vacancies(self):
         pass
