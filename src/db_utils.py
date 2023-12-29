@@ -1,6 +1,6 @@
 import psycopg2
 
-from src.abs_classes import DataHandler, DBExecutor
+from .abs_classes import DataHandler, DBExecutor
 
 
 class PostgresExecutor(DBExecutor):
