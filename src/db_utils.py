@@ -36,7 +36,47 @@ class PostgresExecutor(DBExecutor):
             raise Exception(e)
 
     def create_table(self, table_name: str):
-        pass
+        """Creates table employers or vacancies"""
+        try:
+            with psycopg2.connect(
+                    host="localhost",
+                    database="course",
+                    user="postgres",
+                    password=self.password) as connector:
+                with connector.cursor() as cursor:
+
+                    if table_name == "employers":
+                        cursor.execute("""
+                                CREATE TABLE IF NOT EXISTS employers
+                                (
+                                    employer_id int PRIMARY KEY,
+                                    name varchar(100) NOT NULL,
+                                    url varchar(255) NOT NULL
+                                );
+                                """)
+
+                    elif table_name == "vacancies":
+                        cursor.execute("""
+                                CREATE TABLE IF NOT EXISTS vacancies
+                                (
+                                    vacancy_id int PRIMARY KEY,
+                                    name varchar(100) NOT NULL,
+                                    type varchar(20) NOT NULL,
+                                    url varchar(255) NOT NULL,
+                                    employer_id int REFERENCES employers (employer_id),
+                                    area varchar(100) NOT NULL,
+                                    salary_from int NOT NULL,
+                                    salary_to int NOT NULL,
+                                    schedule varchar(50) NOT NULL,
+                                    employment_type varchar(50) NOT NULL,
+                                    requirements text
+                                );
+                                """)
+                    else:
+                        raise ValueError("Invalid table name")
+
+        except (psycopg2.OperationalError, psycopg2.DatabaseError, psycopg2.InternalError) as e:
+            raise Exception(e)
 
     def insert_values(self, values, table_name: str):
         pass
