@@ -13,7 +13,27 @@ class PostgresExecutor(DBExecutor):
         return self.__password
 
     def create_database(self, db_name: str):
-        pass
+        """Creates a database"""
+        try:
+            conn = psycopg2.connect(
+                database="postgres",
+                user="postgres",
+                password=self.password,
+                host="localhost",
+                port="5432"
+            )
+
+            conn.autocommit = True
+            cursor = conn.cursor()
+
+            cursor.execute(f"SELECT 1 FROM pg_catalog.pg_database WHERE datname = {db_name}")
+            exists = cursor.fetchone()
+            if not exists:
+                cursor.execute(f"CREATE DATABASE {db_name}")
+
+            conn.close()
+        except psycopg2.OperationalError as e:
+            raise Exception(e)
 
     def create_table(self, table_name: str):
         pass
