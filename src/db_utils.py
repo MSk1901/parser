@@ -221,7 +221,46 @@ class DBManager(DataHandler):
             raise Exception(e)
 
     def get_vacancies_with_higher_salary(self):
-        pass
+        """Returns list of vacancies with the highest salary by currency"""
+        vacancies_list = []
+
+        try:
+            with psycopg2.connect(
+                    host="localhost",
+                    database="course",
+                    user="postgres",
+                    password=self.password) as connector:
+                with connector.cursor() as cursor:
+                    cursor.execute("""
+                    SELECT DISTINCT ON (salary_currency) 
+                    vacancy_id, 
+                    name, 
+                    url, 
+                    salary_from,
+                    salary_to,
+                    salary_currency
+                    FROM vacancies
+                    ORDER BY salary_currency, 
+                    (salary_to + salary_from) / 2 DESC;
+                    """)
+                    result = cursor.fetchall()
+
+                    for value in result:
+                        avg = {"vacancy_id": value[0],
+                               "name": value[1],
+                               "url": value[2],
+                               "salary_from": value[3],
+                               "salary_to": value[4],
+                               "salary_currency": value[5]
+                               }
+
+                        vacancies_list.append(avg)
+
+            return vacancies_list
+
+        except (psycopg2.OperationalError, psycopg2.DatabaseError,
+                psycopg2.InternalError, psycopg2.DataError) as e:
+            raise Exception(e)
 
     def get_vacancies_with_keyword(self, keyword: str):
         pass
