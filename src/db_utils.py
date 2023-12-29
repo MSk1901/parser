@@ -79,7 +79,43 @@ class PostgresExecutor(DBExecutor):
             raise Exception(e)
 
     def insert_values(self, values, table_name: str):
-        pass
+        """Inserts values to employers/vacancies tables"""
+        try:
+            with psycopg2.connect(
+                    host="localhost",
+                    database="course",
+                    user="postgres",
+                    password=self.password) as connector:
+                with connector.cursor() as cursor:
+                    if table_name == "employers":
+                        for value in values:
+                            cursor.execute(f"""
+                            INSERT INTO employers VALUES 
+                            ({value["id"]}, '{value["name"]}', '{value["url"]}');
+                            """)
+                    elif table_name == "vacancies":
+                        for value in values:
+                            cursor.execute(f"""
+                            INSERT INTO vacancies VALUES
+                            ({value["id"]},
+                            '{value["name"]}',
+                            '{value["type"]}',
+                            '{value["vacancy_url"]}',
+                            {value["employer_id"]},
+                            '{value["area"]}',
+                            {value["salary_from"]},
+                            {value["salary_to"]},
+                            '{value["schedule"]}',
+                            '{value["employment_type"]}',
+                            '{value["requirements"]}'
+                            );
+                            """)
+                    else:
+                        raise ValueError("Invalid table name")
+
+        except (psycopg2.OperationalError, psycopg2.DatabaseError,
+                psycopg2.InternalError, psycopg2.DataError) as e:
+            raise Exception(e)
 
 
 class DBManager(DataHandler):
