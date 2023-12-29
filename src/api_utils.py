@@ -17,7 +17,6 @@ class HeadHunterAPI(JobsParser):
                 response = requests.get("https://api.hh.ru/vacancies", params=params)
                 data = response.json()["items"]
 
-                print(data)
                 for vacancy in data:
                     salary_from = vacancy["salary"]["from"]
                     if not salary_from:
