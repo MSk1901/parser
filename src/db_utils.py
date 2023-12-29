@@ -191,7 +191,34 @@ class DBManager(DataHandler):
             raise Exception(e)
 
     def get_avg_salary(self):
-        pass
+        """Returns average salary for vacancies in database by currency"""
+        average_salaries = []
+
+        try:
+            with psycopg2.connect(
+                    host="localhost",
+                    database="course",
+                    user="postgres",
+                    password=self.password) as connector:
+                with connector.cursor() as cursor:
+                    cursor.execute("""
+                    SELECT AVG((salary_from + salary_to) / 2), salary_currency 
+                    FROM vacancies
+                    GROUP BY salary_currency
+                    """)
+                    result = cursor.fetchall()
+
+                    for value in result:
+                        avg = {"currency": value[1],
+                               "average_salary": round(float(value[0]), 2)}
+
+                        average_salaries.append(avg)
+
+            return average_salaries
+
+        except (psycopg2.OperationalError, psycopg2.DatabaseError,
+                psycopg2.InternalError, psycopg2.DataError) as e:
+            raise Exception(e)
 
     def get_vacancies_with_higher_salary(self):
         pass
