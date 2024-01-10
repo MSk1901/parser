@@ -33,7 +33,7 @@ class PostgresExecutor(DBExecutor):
 
             conn.close()
         except psycopg2.OperationalError as e:
-            raise Exception(e)
+            print(e)
 
     def create_table(self, table_name: str):
         """Creates table employers or vacancies"""
@@ -77,7 +77,7 @@ class PostgresExecutor(DBExecutor):
                         raise ValueError("Invalid table name")
 
         except (psycopg2.OperationalError, psycopg2.DatabaseError, psycopg2.InternalError) as e:
-            raise Exception(e)
+            print(e)
 
     def insert_values(self, values, table_name: str):
         """Inserts values to employers/vacancies tables"""
@@ -92,7 +92,8 @@ class PostgresExecutor(DBExecutor):
                         for value in values:
                             cursor.execute(f"""
                             INSERT INTO employers VALUES 
-                            ({value["id"]}, '{value["name"]}', '{value["url"]}');
+                            ({value["id"]}, '{value["name"]}', '{value["url"]}')
+                            ON CONFLICT (employer_id) DO NOTHING;
                             """)
                     elif table_name == "vacancies":
                         for value in values:
@@ -109,15 +110,15 @@ class PostgresExecutor(DBExecutor):
                             '{value["salary_currency"]}',
                             '{value["schedule"]}',
                             '{value["employment_type"]}',
-                            '{value["requirements"]}'
-                            );
+                            '{value["requirements"]}')
+                            ON CONFLICT (vacancy_id) DO NOTHING;
                             """)
                     else:
                         raise ValueError("Invalid table name")
 
         except (psycopg2.OperationalError, psycopg2.DatabaseError,
                 psycopg2.InternalError, psycopg2.DataError) as e:
-            raise Exception(e)
+            print(e)
 
 
 class DBManager(DataHandler):
@@ -150,7 +151,7 @@ class DBManager(DataHandler):
 
         except (psycopg2.OperationalError, psycopg2.DatabaseError,
                 psycopg2.InternalError, psycopg2.DataError) as e:
-            raise Exception(e)
+            print(e)
 
     def get_all_vacancies(self):
         """Returns list of all vacancies"""
@@ -185,7 +186,7 @@ class DBManager(DataHandler):
 
         except (psycopg2.OperationalError, psycopg2.DatabaseError,
                 psycopg2.InternalError, psycopg2.DataError) as e:
-            raise Exception(e)
+            print(e)
 
     def get_avg_salary(self):
         """Returns average salary for vacancies in database by currency"""
@@ -215,7 +216,7 @@ class DBManager(DataHandler):
 
         except (psycopg2.OperationalError, psycopg2.DatabaseError,
                 psycopg2.InternalError, psycopg2.DataError) as e:
-            raise Exception(e)
+            print(e)
 
     def get_vacancies_with_higher_salary(self):
         """Returns list of vacancies with the highest salary by currency"""
@@ -257,7 +258,7 @@ class DBManager(DataHandler):
 
         except (psycopg2.OperationalError, psycopg2.DatabaseError,
                 psycopg2.InternalError, psycopg2.DataError) as e:
-            raise Exception(e)
+            print(e)
 
     def get_vacancies_with_keyword(self, keyword: str):
         """Returns vacancies with a keyword in name or requirements"""
@@ -298,4 +299,4 @@ class DBManager(DataHandler):
 
         except (psycopg2.OperationalError, psycopg2.DatabaseError,
                 psycopg2.InternalError, psycopg2.DataError) as e:
-            raise Exception(e)
+            print(e)

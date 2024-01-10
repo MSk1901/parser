@@ -28,7 +28,7 @@ class HeadHunterAPI(JobsParser):
             return employers_list
 
         except (requests.exceptions.HTTPError, ValueError, KeyError) as e:
-            raise Exception(e)
+            print(e)
 
     def get_vacancies(self):
         """Осуществляет поиск вакансий по ключевому слову и сохраняет вакансии в список"""
@@ -65,4 +65,4 @@ class HeadHunterAPI(JobsParser):
             return vacancies_list
 
         except (requests.exceptions.HTTPError, ValueError, KeyError) as e:
-            raise Exception(e)
+            print(e)
