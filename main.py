@@ -1,7 +1,11 @@
 import os
 
+from dotenv import load_dotenv
+
 from src.api_utils import HeadHunterAPI
 from src.db_utils import DBManager, PostgresExecutor
+
+load_dotenv()
 
 
 def main():
